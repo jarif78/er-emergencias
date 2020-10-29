@@ -3,14 +3,16 @@ package Clinica;
 import java.sql.*;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 
-public class Dao{
+public class Dao extends SwingWorker<Void, Void>{
 	
 	private static boolean baseConectada = false;
 	private static java.sql.Connection base = null;
 	
-    public static void conexion(){
+    private static void conexion(){
     	if (baseConectada) ;
     	else {
     		java.sql.Connection cnx = null;
@@ -133,6 +135,34 @@ public class Dao{
 
 	    return new DefaultTableModel(data, columnNames);
 
+	}
+
+	protected Void doInBackground() throws Exception {
+		// TODO Auto-generated method stub
+		
+    	if (baseConectada) ;
+    	else {
+    		java.sql.Connection cnx = null;
+	        String driver = "com.mysql.cj.jdbc.Driver";
+	        String url = "jdbc:mysql://85.10.205.173/tpunpazclinica";
+	        String user = "grupo6unpaz";
+	        String password = "grupo6unpaz";
+	
+	        try {
+	            Class.forName(driver);
+	            System.out.println("Estableciendo conexion con el servidor d4free.net");
+	            cnx = DriverManager.getConnection(url, user, password);
+	            System.out.println("Se conectó correctamente a la base");
+	            JOptionPane.showMessageDialog(null, "Se encuentra conectado al servidor", "Programa clinica", JOptionPane.INFORMATION_MESSAGE);
+	            Dao.setBase(cnx);
+	            baseConectada = true;
+	        } catch (Exception e) {
+	        	e.printStackTrace();            
+        	}
+    	}
+		
+		
+		return null;
 	}
 
 	

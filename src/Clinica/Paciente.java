@@ -103,5 +103,12 @@ public class Paciente {
 	public void pacienteActivo() {
 		System.out.println(this.idPac+" - "+this.nombrePac+" - "+this.dniPac+" - "+this.telefonoPac+" - "+this.getCoberturaPac());
 	}
+	
+	public void borDatPac() {
+		this.idPac = 0;
+		this.nombrePac = "";
+		this.coberturaPac= "";
+		this.telefonoPac = "";
+	}
 
 }
