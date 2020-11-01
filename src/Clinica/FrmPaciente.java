@@ -234,6 +234,8 @@ public class FrmPaciente extends JDialog {
 			public void mouseClicked(MouseEvent arg0) {
 				if(txtDniPac.getText().length()>5) {
 					String texto = txtDniPac.getText().replaceAll("\\.", "");
+					texto = txtDniPac.getText().replaceAll("\\,", "");
+
 					paciente.setDniPac(Integer.parseInt(texto));
 					if(paciente.existeDNI()) {						// Busqueda de paciente
 						ResultSet rs = paciente.pacienteConDNI();

@@ -139,7 +139,7 @@ public class Dao extends SwingWorker<Void, Void>{
 
 	protected Void doInBackground() throws Exception {
 		// TODO Auto-generated method stub
-		
+
     	if (baseConectada) ;
     	else {
     		java.sql.Connection cnx = null;
@@ -153,7 +153,7 @@ public class Dao extends SwingWorker<Void, Void>{
 	            System.out.println("Estableciendo conexion con el servidor d4free.net");
 	            cnx = DriverManager.getConnection(url, user, password);
 	            System.out.println("Se conectó correctamente a la base");
-	            JOptionPane.showMessageDialog(null, "Se encuentra conectado al servidor", "Programa clinica", JOptionPane.INFORMATION_MESSAGE);
+	            //JOptionPane.showMessageDialog(null, "Se encuentra conectado al servidor", "Programa clinica", JOptionPane.INFORMATION_MESSAGE);
 	            Dao.setBase(cnx);
 	            baseConectada = true;
 	        } catch (Exception e) {
@@ -164,6 +164,7 @@ public class Dao extends SwingWorker<Void, Void>{
 		
 		return null;
 	}
+
 
 	
     
