@@ -22,6 +22,7 @@ import javax.swing.JComboBox;
 import javax.swing.event.CaretListener;
 import javax.swing.event.CaretEvent;
 
+@SuppressWarnings("serial")
 public class FrmBajaPaciente extends JDialog {
 	private JTable table;
 	private JTextField txtFiltroDni;
@@ -49,6 +50,7 @@ public class FrmBajaPaciente extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public FrmBajaPaciente() {
 		setModal(true);
 		setBounds(100, 100, 889, 585);

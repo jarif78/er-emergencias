@@ -2,8 +2,6 @@ package Clinica;
 
 import java.sql.*;
 import java.util.Vector;
-
-import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 
@@ -156,6 +154,7 @@ public class Dao extends SwingWorker<Void, Void>{
 	            //JOptionPane.showMessageDialog(null, "Se encuentra conectado al servidor", "Programa clinica", JOptionPane.INFORMATION_MESSAGE);
 	            Dao.setBase(cnx);
 	            baseConectada = true;
+	            FrmMenuPrincipal.habilitar();
 	        } catch (Exception e) {
 	        	e.printStackTrace();            
         	}

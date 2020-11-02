@@ -16,6 +16,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 
+@SuppressWarnings("serial")
 public class FrmPaciente extends JDialog {
 
 	private JPanel contentPane;
@@ -28,6 +29,7 @@ public class FrmPaciente extends JDialog {
 	private JLabel lblAlertaTel = new JLabel("");
 	private JButton btnIngreso = new JButton("Guardar"); 
 	private JLabel lblCombo = new JLabel("Obra Social");
+	@SuppressWarnings("rawtypes")
 	private JComboBox cmbCoberturaPac = new JComboBox();;
 	private Paciente paciente = new Paciente();
 	private JButton btnBuscar = new JButton("Buscar");
@@ -53,6 +55,7 @@ public class FrmPaciente extends JDialog {
 	/**
 	 * Create the frame.
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public FrmPaciente() {
 		setModal(true);
 
@@ -188,9 +191,12 @@ public class FrmPaciente extends JDialog {
 		txtDniPac.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent arg0) {
+				String texto = txtDniPac.getText();
 				if(txtDniPac.getText().length()>5) {			// Control si el textbox tiene mas de 5 caracteres
-					String texto = txtDniPac.getText().replaceAll("\\.", "");			// transforma texto sin puntos
-					paciente.setDniPac(Integer.parseInt(texto));						// asigna al objeto paciente el dni
+					if(texto.indexOf('.')>1) {
+						texto = txtDniPac.getText().replaceAll("\\.", "");}
+					if(texto.indexOf(',')>1) {
+						texto = txtDniPac.getText().replaceAll("\\,", "");}					paciente.setDniPac(Integer.parseInt(texto));						// asigna al objeto paciente el dni
 					if (ingreso) {								// Control si ingreso
 						if(paciente.existeDNI()) {				// Control si el dni esta ingresado
 							alertaDni();
@@ -226,16 +232,20 @@ public class FrmPaciente extends JDialog {
 			public void mousePressed(MouseEvent arg0) {
 				ingreso = true;
 				formParaIngresar();
+				txtDniPac.requestFocus();
+				txtDniPac.selectAll();
 			}
 		});
 		
 		btnBuscar.addMouseListener(new MouseAdapter() {		// Boton de busqueda para modificar
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				if(txtDniPac.getText().length()>5) {
-					String texto = txtDniPac.getText().replaceAll("\\.", "");
-					texto = txtDniPac.getText().replaceAll("\\,", "");
-
+				String texto = txtDniPac.getText();
+				if(texto.length()>5) {
+					if(texto.indexOf('.')>1) {
+						texto = txtDniPac.getText().replaceAll("\\.", "");}
+					if(texto.indexOf(',')>1) {
+						texto = txtDniPac.getText().replaceAll("\\,", "");}
 					paciente.setDniPac(Integer.parseInt(texto));
 					if(paciente.existeDNI()) {						// Busqueda de paciente
 						ResultSet rs = paciente.pacienteConDNI();
@@ -286,7 +296,8 @@ public class FrmPaciente extends JDialog {
 			if(paciente.existeDNI()) {
 				lblAlertaDni.setForeground(Color.RED);
 				lblAlertaDni.setText("El documento ya se encuentra ingresado");
-				txtDniPac.requestFocus();
+				txtDniPac.requestFocusInWindow();
+				txtDniPac.selectAll();
 			} else btnIngreso.setEnabled(true);
 		}  
 		
@@ -313,13 +324,13 @@ public class FrmPaciente extends JDialog {
 	}
 	
 	public void cargarPacienteEnForm() {
+		lblCombo.setText(paciente.getCoberturaPac());
+		cmbCoberturaPac.setSelectedItem(lblCombo.getText());
 		lblAlertaDni.setText("Datos obtenidos");
 		txtDniPac.setValue(paciente.getDniPac());
 		txtNombrePac.setText(paciente.getNombrePac());
 		txtIdPac.setText(paciente.getIdPac()+"");
 		txtTelPac.setText(paciente.getTelefonoPac());
-		lblCombo.setText(paciente.getCoberturaPac());
-		cmbCoberturaPac.setSelectedItem(lblCombo.getText());
 		
 	}
 	
@@ -366,7 +377,6 @@ public class FrmPaciente extends JDialog {
 		btnIngreso.setEnabled(false);
 		txtIdPac.setVisible(true);
 		btnBuscar.setVisible(false);
-		txtDniPac.requestFocus();
 
 	}
 	

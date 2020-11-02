@@ -6,14 +6,10 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JMenu;
 import javax.swing.JLabel;
-import java.awt.BorderLayout;
-import java.awt.Label;
 import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
 import java.awt.event.InputEvent;
@@ -55,6 +51,7 @@ public class FormAltaMedico {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 524, 349);
@@ -147,6 +144,6 @@ public class FormAltaMedico {
 		
 	}
 
-	private static void addPopup(Component component, final JPopupMenu popup) {
-	}
+	//private static void addPopup(Component component, final JPopupMenu popup) {
+	//}
 }

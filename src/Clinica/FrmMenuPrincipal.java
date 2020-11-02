@@ -5,28 +5,19 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
-import java.awt.BorderLayout;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JPanel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Date;
+import java.text.ParseException;
 
 public class FrmMenuPrincipal {
-	public static Date fecha = new Date();
-
+	private static JButton [] button = new JButton[2];
 	private JFrame frame;
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				Dao d = new Dao();
 				d.execute();
-
 				try {
 					FrmMenuPrincipal window = new FrmMenuPrincipal();
 					window.frame.setVisible(true);
@@ -53,34 +44,49 @@ public class FrmMenuPrincipal {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
-		
 		JOptionPane.showMessageDialog(null, "Bienvenido!\n\nMateria: Programacion Orientada a Objetos\n\nTrabajo Practico de programa Clinica - UNPAZ                                     "
 				+ "\n\n\nProfesor: Ing. Lucas Guaycochea\nProfesor: Lic. Cristian Ciarallo\n\nAlumno: Anahi Aguirre\nAlumno: Ariel Fernandez\nAlumno: Ricardo Gonzalez\nAlumno: Walter Suarez\n\n",
 				"TP-POO - Programa clinica", JOptionPane.INFORMATION_MESSAGE);
 
 		
-		JButton button = new JButton("Pacientes");
-		button.addMouseListener(new MouseAdapter() {
-			@Override
+		button[0] = new JButton("Pacientes");
+		button[0].setVisible(false);
+		button[0].addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				FrmPaciente FP = new FrmPaciente();
 				FP.setVisible(true);
 			}
 		});
-		button.setBounds(310, 148, 156, 63);
-		frame.getContentPane().add(button);
+		button[0].setBounds(310, 148, 156, 63);
+		frame.getContentPane().add(button[0]);
 		
-		JButton button_1 = new JButton("Especialidades");
-		button_1.addMouseListener(new MouseAdapter() {
+		
+		button[1] = new JButton ("Especialidades");
+		button[1].setVisible(false);
+		button[1].addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent arg0) {
-				FrmEspecialidades FE = new FrmEspecialidades();
-				FE.setVisible(true);
+				FrmEspecialidades FE;
+				try {
+					FE = new FrmEspecialidades();
+					FE.setVisible(true);
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				
 			}
 		});
-		button_1.setBounds(116, 148, 156, 63);
-		frame.getContentPane().add(button_1);
+		button[1].setBounds(116, 148, 156, 63);
+		frame.getContentPane().add(button[1]);
 		
-		//Dao.conexion();
 		
 	}
+	
+	public static void habilitar() {
+		for(int x = 0; x<2; x++) {
+			button[x].setVisible(true);
+		}
+	}
+	
+	
+	
 }
