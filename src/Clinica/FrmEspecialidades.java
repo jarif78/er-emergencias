@@ -4,6 +4,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeListener;
 import javax.swing.JLabel;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
@@ -25,6 +26,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 @SuppressWarnings({"serial", "rawtypes", "unused"})
 public class FrmEspecialidades extends JDialog {
@@ -37,6 +40,7 @@ public class FrmEspecialidades extends JDialog {
 	private	JComboBox cmbEsp = new JComboBox();
 	private int ID = 0;
 	private String especialidad;
+	private byte tab = 5;
 
 	
 	/**
@@ -55,6 +59,7 @@ public class FrmEspecialidades extends JDialog {
 
 	@SuppressWarnings({ "unchecked"})
 	public FrmEspecialidades() throws ParseException  {
+		setModal(true);
 
 		Especialidades esp = new Especialidades();
 		Date fecha = new Date();
@@ -63,6 +68,7 @@ public class FrmEspecialidades extends JDialog {
 		fechaHoy = formatter.parse(formatter.format(fecha));
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+
 		tabbedPane.setSelectedIndex(-1);
 		tabbedPane.setBounds(31, 68, 590, 363);
 		contentPanel.add(tabbedPane);
@@ -112,6 +118,7 @@ public class FrmEspecialidades extends JDialog {
 		PanHora.add(lblHorarioHasta);
 		
 		JButton btnAgrHor = new JButton("Habilitar");
+
 		btnAgrHor.setBounds(467, 286, 89, 23);
 		PanHora.add(btnAgrHor);
 		
@@ -183,7 +190,28 @@ public class FrmEspecialidades extends JDialog {
 			
 		}
 		
+		tabbedPane.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if(tab != tabbedPane.getSelectedIndex()) {
+					tab = (byte) tabbedPane.getSelectedIndex();
+					if(tab==1) {
+						int [] a = new int [2];
+						for(int x = 1; x<8; x++) {
+							a = esp.devolverHorario(x);
+							if(a[1]!=0) {
+								chkDia[x].setSelected(true);
+								cmbDes[x].setSelectedIndex(a[0]);
+								cmbHas[x].setSelectedIndex(a[1]);
+						}
+					}
+					
+				}
+				
+			}}
+		});
 		
+
 		cmbEsp.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) {
 				if(especialidad==(String) cmbEsp.getSelectedItem()) {
@@ -193,12 +221,13 @@ public class FrmEspecialidades extends JDialog {
 					esp.carIdEspConNom();
 					ID = esp.getIdEsp();
 					esp.carDiaHorEsp();
-					esp.mostrar();
+					tabbedPane.setSelectedIndex(0);
+					tab = 0;
+					limpiarHoras();
 				}
 			}
 		});
 
-		
 		
 		
 		
@@ -209,7 +238,6 @@ public class FrmEspecialidades extends JDialog {
 					esp.setNomEsp(especialidad);
 					if(esp.exiEsp()) {
 						btnAgrEsp.setText("Modificar");
-						
 					}
 				}
 				
@@ -225,15 +253,16 @@ public class FrmEspecialidades extends JDialog {
 					if(chkDia[x].isSelected()) {
 						int d = cmbDes[x].getSelectedIndex();
 						int h = cmbHas[x].getSelectedIndex();
-						for(int y = 1; y < 25; y++) {
+						for(int y = 0; y < 25; y++) {
 							if(y>= d&& y<=h) {
 							esp.setDiaHorEsp(r,x,y);
 							r = r+ 1;
-							//System.out.println("Linea: "+r+"\tEspecialidad:"+esp.getNomEsp()+"\tId: "+esp.getIdEsp()+"\tDia: "+x+"\tHoras: "+y);
 							}
 						}
 					}
 				}
+				esp.setDiaHorEsp2();
+
 			}
 		});
 
@@ -254,21 +283,24 @@ public class FrmEspecialidades extends JDialog {
 					jdateHasta.setDate(jdateDesde.getDate());
 			}}
 		});
-
-
-		
 		
 	}
 	
 	public void completarCampos() {
-		
 	}
-	
 	@SuppressWarnings("unchecked")
 	private void setearJcombo (JComboBox j) {
 		j.setModel(new DefaultComboBoxModel(new String[] {"00:00", "01:00","02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00",
 				"09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00", "24:00"}));
 		((JLabel)j.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
 		
+	}
+	
+	public void limpiarHoras() {
+		for(byte x = 1; x<8; x++) {
+			chkDia[x].setSelected(false);
+			cmbDes[x].setSelectedIndex(8);
+			cmbHas[x].setSelectedIndex(18);
+		}
 	}
 }

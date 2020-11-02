@@ -11,7 +11,7 @@ public class Especialidades {
 	private String nomEsp;
 	private boolean estEsp;
 	private int idMed;
-	private int [][] diaHorEsp = new int[2][168];
+	private int [][] diaHorEsp = new int[2][180];
 
 	public int getIdEsp() {
 		return idEsp;
@@ -42,9 +42,27 @@ public class Especialidades {
 		if(idEsp>0) {
 			this.diaHorEsp[0][r] =  d;
 			this.diaHorEsp[1][r] =  h;
-			String sql = "INSERT INTO `EspAbierta`(`IdAbiEsp`, `DiaAbiEsp`, `HorAbiEsp`) VALUES (" + this.idEsp + "," + d + "," + h + ")";
-			Dao.agregarBorrar(sql);
 		}
+	}
+	
+	public void setDiaHorEsp2() { //r es la linea - d es el dia de la semana - h es la hora 
+		Dao.agregarBorrar("DELETE FROM `EspAbierta` WHERE `idAbiEsp` = " + this.idEsp);
+		//System.out.println("Se borraron los horarios de: " + this.nomEsp);
+		String sql = "INSERT INTO `EspAbierta`(`IdAbiEsp`, `DiaAbiEsp`, `HorAbiEsp`) VALUES ";
+		for(int x=0; x<180; x++) {
+			if(diaHorEsp[0][x]==0) x = 180;
+			else {
+			if(idEsp>0) {
+				int d = this.diaHorEsp[0][x];
+				int h = this.diaHorEsp[1][x];
+				sql = sql +  "(" + this.idEsp + "," + d + "," + h + ") ,";
+				//Dao.agregarBorrar(sql);
+			}}
+		}
+		sql = sql.substring(0, sql.length() -1);
+		//System.out.println("se armo el sql de alta de horarios y dias " + sql);
+		Dao.agregarBorrar(sql);
+		//System.out.println("se agrego a la base de datos");
 	}
 	
 	public boolean ingEsp() {
@@ -71,6 +89,7 @@ public class Especialidades {
 		DefaultComboBoxModel datCom = new DefaultComboBoxModel();
 		String sql = "SELECT `nombreEsp` FROM Especializacion";
 		ResultSet rs = null;
+		datCom.addElement(null);
 		rs = Dao.consulta(sql);
 			try {
 				while(rs.next()) datCom.addElement(rs.getString(1));
@@ -98,7 +117,7 @@ public class Especialidades {
 	
 	
 	public void carDiaHorEsp() {
-		
+		limpiarDiasHoras();
 		String sSQL = "SELECT idAbiEsp FROM EspAbierta WHERE IdAbiEsp = " + this.idEsp;
 		if(Dao.ifExists(sSQL)) {
 			int x = 1;
@@ -117,6 +136,25 @@ public class Especialidades {
 		}
 	}
 	
+	private void limpiarDiasHoras() {
+		for (int x = 0; x<180; x++) {
+			this.diaHorEsp[0][x] = 0;
+			this.diaHorEsp[1][x] = 0;	
+		}
+	}
+	
+	public int [] devolverHorario(int dia) {
+		int max = 0, min = 25;
+		for(int x = 0; x<180; x++) {
+			if(this.diaHorEsp[0][x]==dia) {
+				if(this.diaHorEsp[1][x]<min) min = this.diaHorEsp[1][x];
+				if(this.diaHorEsp[1][x]>max) max = this.diaHorEsp[1][x];
+			}
+		}
+		int[] a = {min, max};
+		return a;
+	}
+	
 	public boolean exiEsp() {
 		String sql = "SELECT idEsp FROM Especializacion WHERE nombreEsp = '" + this.nomEsp + "'";
 		return Dao.ifExists(sql);
@@ -124,7 +162,7 @@ public class Especialidades {
 	
 	
 	public void mostrar () {
-		for(int x=1; x<168;x++) {
+		for(int x=1; x<180;x++) {
 			System.out.println("Id: "+this.idEsp+"\tDias: "+this.diaHorEsp[0][x]+"\tHoras: "+this.diaHorEsp[1][x]);
 		}
 	}
