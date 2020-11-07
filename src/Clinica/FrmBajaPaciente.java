@@ -197,9 +197,7 @@ public class FrmBajaPaciente extends JDialog {
 		btnEliminar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				
 				int r = JOptionPane.showConfirmDialog(btnEliminar, "Desea borrar al paciente: " +paciente.getNombrePac(), "Borrar pacientes", JOptionPane.YES_NO_OPTION);
-
 				if(r==0) {
 					if(paciente.eliminarPaciente()) {
 						try {

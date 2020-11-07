@@ -154,7 +154,7 @@ public class Dao extends SwingWorker<Void, Void>{
 	            //JOptionPane.showMessageDialog(null, "Se encuentra conectado al servidor", "Programa clinica", JOptionPane.INFORMATION_MESSAGE);
 	            Dao.setBase(cnx);
 	            baseConectada = true;
-	            FrmMenuPrincipal.habilitar();
+	            //FrmMenuPrincipal.habilitar();
 	        } catch (Exception e) {
 	        	e.printStackTrace();            
         	}

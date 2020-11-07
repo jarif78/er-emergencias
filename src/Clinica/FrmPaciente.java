@@ -193,10 +193,18 @@ public class FrmPaciente extends JDialog {
 			public void focusLost(FocusEvent arg0) {
 				String texto = txtDniPac.getText();
 				if(txtDniPac.getText().length()>5) {			// Control si el textbox tiene mas de 5 caracteres
-					if(texto.indexOf('.')>1) {
-						texto = txtDniPac.getText().replaceAll("\\.", "");}
-					if(texto.indexOf(',')>1) {
-						texto = txtDniPac.getText().replaceAll("\\,", "");}					paciente.setDniPac(Integer.parseInt(texto));						// asigna al objeto paciente el dni
+					if(texto.indexOf('.')>1) {texto = txtDniPac.getText().replaceAll("\\.", "");}
+					if(texto.indexOf(',')>1) {texto = txtDniPac.getText().replaceAll("\\,", "");}
+						try {
+							paciente.setDniPac(Integer.parseInt(texto));						// asigna al objeto paciente el dni
+						} catch (Exception e){
+							JOptionPane.showMessageDialog(null, "El numero ingresado no es correcto", "Numero de documento", JOptionPane.INFORMATION_MESSAGE);
+							txtDniPac.setText("");
+							txtDniPac.requestFocus();
+						} 
+					
+						
+						
 					if (ingreso) {								// Control si ingreso
 						if(paciente.existeDNI()) {				// Control si el dni esta ingresado
 							alertaDni();

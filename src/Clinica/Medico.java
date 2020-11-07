@@ -1,9 +1,14 @@
 package Clinica;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class Medico {
 	private int idMed;
 	private String nombreMedico;
 	private String especialidadMed;
+	private int dniMedico;
+	private String telMedico;
 	
 	
 	
@@ -25,8 +30,93 @@ public class Medico {
 	public void setEspecialidadMed(String especialidadMed) {
 		this.especialidadMed = especialidadMed;
 	}
+
+	public int getDniMedico() {
+		return dniMedico;
+	}
+	public void setDniMedico(int dniMedico) {
+		this.dniMedico = dniMedico;
+	}
+	public String getTelMedico() {
+		return telMedico;
+	}
+	public void setTelMedico(String telMedico) {
+		this.telMedico = telMedico;
+	}
+
+	public ResultSet listadoMedicos() {
+		String sql = "SELECT * FROM Medico";
+		ResultSet rs = null;
+		rs = Dao.consulta(sql);
+		return rs;
+	}
+	
+	public void cargarMedicoConId() {
+		if(idMed!=0) {
+			String consSQL = "SELECT * FROM Medico WHERE idMed = " + idMed;
+			ResultSet rs = null;
+			rs = Dao.consulta(consSQL);
+			try {
+				while(rs.next()) {
+					nombreMedico = rs.getString(2);
+					dniMedico = rs.getInt(3);
+					especialidadMed = rs.getString(4);
+					telMedico = rs.getString(5);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	public ResultSet listadoNombreMedicos() {
+		String sql = "SELECT nombreMedico FROM Medico";
+		ResultSet rs = null;
+		rs = Dao.consulta(sql);
+		return rs;
+	}
+
 	
 	
+	public void eliminarMedico() {
+		if(idMed!=0) {
+			String consSQL = "DELETE FROM Medico WHERE idMed = " + idMed;
+			Dao.agregarBorrar(consSQL);
+		}
+	}
 	
+	public boolean existeDniMedico() {
+		String sSQL = "SELECT idMed FROM Medico WHERE dniMedico = " + dniMedico;
+		return Dao.ifExists(sSQL);
+	}
+	
+	public void agregarMedico() {
+		String consSQL = "INSERT INTO Medico (nombreMedico, dniMedico, especialidadMed, telMedico) VALUES ('" + nombreMedico + "' , " + dniMedico + " , '" + especialidadMed + "' , '" + telMedico + "')";
+		Dao.agregarBorrar(consSQL);
+	}
+	
+	public void modificarDatosMedico() {
+		String consSQL = "UPDATE Medico SET nombreMedico ='" + nombreMedico + "', dniMedico=" + dniMedico + ", especialidadMed='" + especialidadMed + "', telMedico='" + telMedico + "' WHERE idMed = " + idMed;
+		System.out.println(consSQL);
+		Dao.agregarBorrar(consSQL);
+	}
+	
+	public void cargarMedicoConNombre() {
+			String consSQL = "SELECT * FROM Medico WHERE nombreMedico = '" + nombreMedico + "'";
+			ResultSet rs = null;
+			rs = Dao.consulta(consSQL);
+			try {
+				while(rs.next()) {
+					idMed = rs.getInt(1);
+					dniMedico = rs.getInt(3);
+					especialidadMed = rs.getString(4);
+					telMedico = rs.getString(5);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		
+	}
 
 }

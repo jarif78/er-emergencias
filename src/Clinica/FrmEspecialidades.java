@@ -15,12 +15,16 @@ import javax.swing.DefaultComboBoxModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JTabbedPane;
+
+import java.util.Calendar;
 import java.util.Date;
 import com.toedter.calendar.JDateChooser;
 import java.beans.PropertyChangeListener;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.beans.PropertyChangeEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -41,6 +45,10 @@ public class FrmEspecialidades extends JDialog {
 	private int ID = 0;
 	private String especialidad;
 	private byte tab = 5;
+	private JComboBox cmbDiasInhabilitados = new JComboBox();
+	private JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+	private JButton btnEliminar = new JButton("Eliminar Especializacion");
+	private JComboBox cmbAreMed = new JComboBox();
 
 	
 	/**
@@ -60,19 +68,15 @@ public class FrmEspecialidades extends JDialog {
 	@SuppressWarnings({ "unchecked"})
 	public FrmEspecialidades() throws ParseException  {
 		setModal(true);
-
 		Especialidades esp = new Especialidades();
 		Date fecha = new Date();
 		Date fechaHoy;
 		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 		fechaHoy = formatter.parse(formatter.format(fecha));
-		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-
+		tabbedPane.setEnabled(false);
 		tabbedPane.setSelectedIndex(-1);
 		tabbedPane.setBounds(31, 68, 590, 363);
 		contentPanel.add(tabbedPane);
-		
 		JPanel panGen = new JPanel();
 		tabbedPane.addTab("General", null, panGen, null);
 		panGen.setLayout(null);
@@ -82,7 +86,6 @@ public class FrmEspecialidades extends JDialog {
 		lblNewLabel_2.setBounds(25, 37, 190, 24);
 		panGen.add(lblNewLabel_2);
 		
-		JComboBox cmbAreMed = new JComboBox();
 		cmbAreMed.setBounds(225, 37, 180, 20);
 		panGen.add(cmbAreMed);
 		
@@ -135,34 +138,46 @@ public class FrmEspecialidades extends JDialog {
 		lblHasta.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblHasta.setBounds(21, 108, 74, 24);
 		panCer.add(lblHasta);
-		
 		JDateChooser jdateDesde = new JDateChooser();
 		jdateDesde.setBounds(125, 57, 155, 20);
 		jdateDesde.setDate(new Date());
 		panCer.add(jdateDesde);
-		
 		JDateChooser jdateHasta = new JDateChooser();
 		jdateHasta.setBounds(125, 108, 155, 20);
 		panCer.add(jdateHasta);
-		
 		JButton btnAgregarFeriado = new JButton("Inhabilitar");
-		btnAgregarFeriado.setBounds(139, 214, 113, 23);
+		btnAgregarFeriado.setBounds(99, 205, 113, 23);
 		panCer.add(btnAgregarFeriado);
-
+		cmbDiasInhabilitados.setBounds(362, 59, 170, 20);
+		panCer.add(cmbDiasInhabilitados);
+		JButton btnHabilitar = new JButton("Habilitar");
+		btnHabilitar.setBounds(393, 205, 113, 23);
+		panCer.add(btnHabilitar);
 		cmbEsp.setBounds(207, 23, 195, 20);
 		cmbEsp.setEditable(true);
 		cmbEsp.setModel(esp.LisEsp());
 		contentPanel.add(cmbEsp);
 		especialidad = (String) cmbEsp.getSelectedItem();
 		esp.setNomEsp(especialidad);
-		esp.carIdEspConNom();
+		esp.cargarIdEspPorNombre();
 		ID = esp.getIdEsp();
-		
 		JButton btnAgrEsp = new JButton("Agregar");
 		btnAgrEsp.setBounds(463, 22, 89, 23);
 		contentPanel.add(btnAgrEsp);
+
 		
+		btnEliminar.setEnabled(false);
+		btnEliminar.setBounds(41, 442, 195, 23);
+		contentPanel.add(btnEliminar);
 		
+		JButton btnNewButton = new JButton("Cerrar");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
+		btnNewButton.setBounds(532, 442, 89, 23);
+		contentPanel.add(btnNewButton);
 		chkDia[1] = new JCheckBox("Lunes");
 		chkDia[2] = new JCheckBox("Martes");
 		chkDia[3] = new JCheckBox("Miercoles");
@@ -170,7 +185,6 @@ public class FrmEspecialidades extends JDialog {
 		chkDia[5] = new JCheckBox("Viernes");
 		chkDia[6] = new JCheckBox("Sabado");
 		chkDia[7] = new JCheckBox("Domingo");
-	
 		for (byte x = 1; x<8; x++) {
 			cmbDes[x] = new JComboBox();				// Crear y rellenar 7 combobox hora desde
 			int a = 10 + x*40;							// posicion altura
@@ -178,17 +192,23 @@ public class FrmEspecialidades extends JDialog {
 			cmbDes[x].setBounds(174, a, 97, 20);		// colcocar en lugar
 			PanHora.add(cmbDes[x]);						// agregar al panel
 			cmbDes[x].setSelectedIndex(8);
-			
 			cmbHas[x] = new JComboBox();				// Crear y rellenar 7 combobox hora hasta
 			setearJcombo(cmbHas[x]);					// relleno
 			cmbHas[x].setBounds(305, a, 97, 20);
 			PanHora.add(cmbHas[x]);
 			cmbHas[x].setSelectedIndex(18);
-			
 			chkDia[x].setBounds(31, a, 97, 23);
 			PanHora.add(chkDia[x]);
-			
 		}
+
+		btnHabilitar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(cmbDiasInhabilitados.getSelectedIndex()>=0) {
+					java.sql.Date d = (java.sql.Date) cmbDiasInhabilitados.getSelectedItem();
+					esp.habilitarDias(d);
+					cargarForm(esp);
+				}}
+		});
 		
 		tabbedPane.addMouseListener(new MouseAdapter() {
 			@Override
@@ -196,52 +216,53 @@ public class FrmEspecialidades extends JDialog {
 				if(tab != tabbedPane.getSelectedIndex()) {
 					tab = (byte) tabbedPane.getSelectedIndex();
 					if(tab==1) {
-						int [] a = new int [2];
-						for(int x = 1; x<8; x++) {
-							a = esp.devolverHorario(x);
-							if(a[1]!=0) {
-								chkDia[x].setSelected(true);
-								cmbDes[x].setSelectedIndex(a[0]);
-								cmbHas[x].setSelectedIndex(a[1]);
 						}
-					}
-					
+				} else if(tab==2) {
 				}
-				
-			}}
+			}
 		});
-		
 
 		cmbEsp.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) {
 				if(especialidad==(String) cmbEsp.getSelectedItem()) {
 				} else {
-					especialidad = (String) cmbEsp.getSelectedItem();
-					esp.setNomEsp(especialidad);
-					esp.carIdEspConNom();
-					ID = esp.getIdEsp();
-					esp.carDiaHorEsp();
-					tabbedPane.setSelectedIndex(0);
-					tab = 0;
-					limpiarHoras();
+					cargarForm(esp);
+					if(ID!=0) {
+					} else {
+						btnEliminar.setEnabled(false);
+						tabbedPane.setEnabled(false);
+					}
 				}
 			}
 		});
-
-		
-		
 		
 		btnAgrEsp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				especialidad = (String) cmbEsp.getSelectedItem();
 				if(especialidad.length()>5) {
 					esp.setNomEsp(especialidad);
+					btnEliminar.setEnabled(false);
 					if(esp.exiEsp()) {
 						btnAgrEsp.setText("Modificar");
+					} else {
+						if(esp.AgregarEspecialidad()) {
+							JOptionPane.showMessageDialog(btnAgrEsp, "La especialidad " + especialidad + " se ingreso correctamente.", "Especialidades", JOptionPane.INFORMATION_MESSAGE);
+							reiniciarForm();
+						};
 					}
 				}
+			}
+		});
+		
+		btnEliminar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int r = JOptionPane.showConfirmDialog(btnEliminar, "Desea borrar la especializacion: " +esp.getNomEsp(), "Especializacion", JOptionPane.YES_NO_OPTION);
+				if(r==0) {
+					esp.eliminarEspecializacion();
+					JOptionPane.showMessageDialog(null, "La especialidad " + especialidad + " se elimino correctamente.", "Especialidades", JOptionPane.INFORMATION_MESSAGE);
+					reiniciarForm();
+				}
 				
-				//if(esp.ingEsp()) JOptionPane.showMessageDialog(null, "Especialidad ingresada", "Especialidad", JOptionPane.INFORMATION_MESSAGE); 
 			}
 		});
 		
@@ -262,7 +283,7 @@ public class FrmEspecialidades extends JDialog {
 					}
 				}
 				esp.setDiaHorEsp2();
-
+				cargarForm(esp);
 			}
 		});
 
@@ -277,11 +298,14 @@ public class FrmEspecialidades extends JDialog {
 
 		btnAgregarFeriado.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
 				if(jdateHasta.getDate().before(jdateDesde.getDate())) {
 					JOptionPane.showMessageDialog(null, "La fecha hasta no puede ser menor que la fecha desde", "Inhabilitar dias", JOptionPane.ERROR_MESSAGE);
 					jdateHasta.setDate(jdateDesde.getDate());
-			}}
+					}
+				sumarDiaFecha(jdateDesde.getDate(), jdateHasta.getDate(), esp);
+				cargarForm(esp);
+				//System.out.println(jdateHasta.getDate());
+			}
 		});
 		
 	}
@@ -302,5 +326,63 @@ public class FrmEspecialidades extends JDialog {
 			cmbDes[x].setSelectedIndex(8);
 			cmbHas[x].setSelectedIndex(18);
 		}
+		cmbDiasInhabilitados.removeAllItems();
 	}
+	
+	public void reiniciarForm(){
+		try {
+			dispose();
+			FrmEspecialidades a = new FrmEspecialidades();
+			a.setVisible(true);
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void cargarForm(Especialidades esp) {
+		especialidad= (String) cmbEsp.getSelectedItem();
+		esp.setNomEsp(especialidad);
+		esp.cargarIdEspPorNombre();
+		ID = esp.getIdEsp();
+		if(ID!=0) {
+			limpiarHoras();
+			esp.carDiaHorEsp();
+			btnEliminar.setEnabled(true);
+			tabbedPane.setEnabled(true);
+			cmbDiasInhabilitados.setModel(esp.listadoDiasInhabilitados());
+			int [] a = new int [2];
+			for(int x = 1; x<8; x++) {
+				a = esp.devolverHorario(x);
+				if(a[1]!=0) {
+					chkDia[x].setSelected(true);
+					cmbDes[x].setSelectedIndex(a[0]);
+					cmbHas[x].setSelectedIndex(a[1]);
+			}}
+
+		}
+	}
+	
+	
+	public void sumarDiaFecha(Date desde, Date hasta, Especialidades esp){
+	      Calendar calendar1 = Calendar.getInstance();
+	      calendar1.setTime(desde); // Configuramos la fecha que se recibe
+	      calendar1.set(Calendar.HOUR_OF_DAY, 0);
+	      calendar1.set(Calendar.MINUTE, 0);
+	      calendar1.set(Calendar.SECOND, 0);
+	      calendar1.set(Calendar.MILLISECOND, 0);
+	      Calendar calendar2 = Calendar.getInstance();
+	      calendar2.setTime(hasta); // Configuramos la fecha que se recibe
+	      calendar2.set(Calendar.HOUR_OF_DAY, 0);
+	      calendar2.set(Calendar.MINUTE, 0);
+	      calendar2.set(Calendar.SECOND, 0);
+	      calendar2.set(Calendar.MILLISECOND, 0);
+	      esp.setIdEsp(ID);
+	      esp.inhabilitarDias(calendar1);
+	      while (calendar1.compareTo(calendar2) < 0) {
+	    	  calendar1.add(Calendar.DAY_OF_MONTH, 1); // suma un día al calendario 1
+	          esp.inhabilitarDias(calendar1);
+	      }}
 }

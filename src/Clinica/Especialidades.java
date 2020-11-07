@@ -2,6 +2,7 @@ package Clinica;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
 
 import javax.swing.DefaultComboBoxModel;
 
@@ -9,7 +10,7 @@ public class Especialidades {
 	
 	private int idEsp;
 	private String nomEsp;
-	private boolean estEsp;
+	private int IdAreaMedica;
 	private int idMed;
 	private int [][] diaHorEsp = new int[2][180];
 
@@ -25,17 +26,18 @@ public class Especialidades {
 	public void setNomEsp(String nomEsp) {
 		this.nomEsp = nomEsp;
 	}
-	public boolean isEstEsp() {
-		return estEsp;
-	}
-	public void setEstEsp(boolean estEsp) {
-		this.estEsp = estEsp;
-	}
+
 	public int getIdMed() {
 		return idMed;
 	}
 	public void setIdMed(int idMed) {
 		this.idMed = idMed;
+	}
+	public int getIdAreaMedica() {
+		return IdAreaMedica;
+	}
+	public void setIdAreaMedica(int idAreaMedica) {
+		IdAreaMedica = idAreaMedica;
 	}
 
 	public void setDiaHorEsp(int r, int d, int h) { //r es la linea - d es el dia de la semana - h es la hora 
@@ -46,7 +48,7 @@ public class Especialidades {
 	}
 	
 	public void setDiaHorEsp2() { //r es la linea - d es el dia de la semana - h es la hora 
-		Dao.agregarBorrar("DELETE FROM `EspAbierta` WHERE `idAbiEsp` = " + this.idEsp);
+		Dao.agregarBorrar("DELETE FROM `EspAbierta` WHERE `idAbiEsp` = " + this.idEsp + " AND `DiaAbiEsp` > 0");
 		//System.out.println("Se borraron los horarios de: " + this.nomEsp);
 		String sql = "INSERT INTO `EspAbierta`(`IdAbiEsp`, `DiaAbiEsp`, `HorAbiEsp`) VALUES ";
 		for(int x=0; x<180; x++) {
@@ -60,12 +62,11 @@ public class Especialidades {
 			}}
 		}
 		sql = sql.substring(0, sql.length() -1);
-		//System.out.println("se armo el sql de alta de horarios y dias " + sql);
 		Dao.agregarBorrar(sql);
 		//System.out.println("se agrego a la base de datos");
 	}
 	
-	public boolean ingEsp() {
+	public boolean AgregarEspecialidad() {
 		boolean resultado = false;
 		if(this.nomEsp.length()>5) {
 			String sql = "INSERT INTO `Especializacion`(`nombreEsp`) VALUES ('" + this.nomEsp +"')";
@@ -101,18 +102,22 @@ public class Especialidades {
 		return datCom;
 	}
 	
-	public void carIdEspConNom() {	// cargar id a la instacia de acuerdo al nombre cargado
-		String sql = "SELECT idEsp FROM Especializacion WHERE nombreEsp = '" + this.nomEsp + "'";
-		ResultSet rs = null;
-		rs = Dao.consulta(sql);
-		try {
-			while(rs.next()) {
-				setIdEsp(rs.getInt(1));
+	public void cargarIdEspPorNombre() {	// cargar id a la instacia de acuerdo al nombre cargado
+		if(this.nomEsp!=null) {
+			boolean b = true;
+			String sql = "SELECT idEsp FROM Especializacion WHERE nombreEsp = '" + this.nomEsp + "'";
+			ResultSet rs = null;
+			rs = Dao.consulta(sql);
+			try {
+				while(rs.next()) {
+					idEsp=(rs.getInt(1));
+					b = false;
+				}	if(b) this.idEsp = 0;
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}} else {
+				this.idEsp = 0;
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	
@@ -167,5 +172,94 @@ public class Especialidades {
 		}
 	}
 	
+	public void inhabilitarDias(Calendar d) {
+		if(idEsp!=0) {
+			java.util.Date a;
+			a = d.getTime();
+			java.sql.Date sqlDate = new java.sql.Date(a.getTime());
+			String sql = "SELECT `IdAbiEsp` FROM `EspAbierta` WHERE `DiaCerrado` = '" + sqlDate + "' AND `IdAbiEsp` = " + idEsp;
+			if(Dao.ifExists(sql));
+			else {
+				sql = "INSERT INTO `EspAbierta`(`IdAbiEsp`, `DiaCerrado`) VALUES ('" + idEsp + "' , '" + sqlDate + "')";
+				Dao.agregarBorrar(sql);
+				
+			}}
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public DefaultComboBoxModel listadoDiasInhabilitados() {
+		DefaultComboBoxModel datCom = new DefaultComboBoxModel();
+		String sql = "SELECT `DiaCerrado` FROM EspAbierta WHERE `IdAbiEsp` = " + idEsp + " AND `DiaCerrado` >= now() ";
+		ResultSet rs = null;
+		rs = Dao.consulta(sql);
+			try {
+				while(rs.next()) {
+					datCom.addElement(rs.getDate(1));
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		return datCom;
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public DefaultComboBoxModel comboAreaMedica() {
+		DefaultComboBoxModel datCom = new DefaultComboBoxModel();
+		String sql = "SELECT `DiaCerrado` FROM EspAbierta WHERE `IdAbiEsp` = " + idEsp + " AND `DiaCerrado` >= now() ";
+		ResultSet rs = null;
+		rs = Dao.consulta(sql);
+			try {
+				while(rs.next()) {
+					datCom.addElement(rs.getDate(1));
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		return datCom;
+	}
+	
+	
+	
+	public void habilitarDias(java.sql.Date dia) {
+		String sql = "DELETE FROM `EspAbierta` WHERE `idAbiEsp` = " + idEsp + " AND  `DiaCerrado` ='" + dia + "'";
+		Dao.agregarBorrar(sql);
+	}
+	
+	public void eliminarEspecializacion() {				// Agregar verificador de si hay turnos abiertos en caso de haber enviar mensaje de error 
+		String sql =  "SELECT idEsp FROM Especializacion WHERE idEsp = " + this.idEsp ;
+		
+		if(Dao.ifExists(sql)){
+			sql = "DELETE FROM Especializacion WHERE idEsp = " + this.idEsp ;
+			Dao.agregarBorrar(sql);
+			sql = "DELETE FROM EspAbierta WHERE idAbiEsp = " + this.idEsp ;
+			}
+		}
+
+	public ResultSet especialidadSinArea () {
+		String consSQL = "SELECT nombreEsp FROM Especializacion WHERE IdAreaMedica IS NULL OR IdAreaMedica = 0";
+		return Dao.consulta(consSQL);
+	}
+	
+	public ResultSet especialidadConArea (int idArea) {
+		if(idArea==0) { idArea = -1; } 
+		String consSQL = "SELECT nombreEsp FROM Especializacion WHERE IdAreaMedica = " + idArea;
+		return Dao.consulta(consSQL);
+	}
+
+	public void establecerAreaMedica() {
+		String consSQL = "UPDATE Especializacion SET IdAreaMedica =" + IdAreaMedica + " WHERE idEsp =" + idEsp;
+		Dao.agregarBorrar(consSQL);
+	}
+	
+	public void borrarAreaMedica() {
+		String consSQL = "UPDATE Especializacion SET IdAreaMedica = 0 WHERE idEsp =" + idEsp;
+		System.out.println(consSQL);
+		Dao.agregarBorrar(consSQL);
+	
+	}
 	
 }
