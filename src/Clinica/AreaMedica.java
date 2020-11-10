@@ -90,7 +90,44 @@ public class AreaMedica {
 			setNombreAreaMedica(nombreAreaMedica);
 		}
 	}
+	
+	public void cargarAreaConID() {
+		String consSQL = "SELECT * FROM AreaMedica WHERE idAreaMedica = " + idAreaMedica;
+		ResultSet rs = null;
+		rs = Dao.consulta(consSQL);
+		try {
+			while(rs.next()) {
+				nombreAreaMedica = rs.getString(2);
+				idMedicoCoordinador = rs.getInt(3);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
+	public void cargarAreaConNombre() {
+		String consSQL = "SELECT * FROM AreaMedica WHERE nombreAreaMedica = '" + nombreAreaMedica + "'";
+		ResultSet rs = null;
+		rs = Dao.consulta(consSQL);
+		try {
+			while(rs.next()) {
+				idAreaMedica = rs.getInt(1);
+				idMedicoCoordinador = rs.getInt(3);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void eliminarAreaMedica() {
+		if(idAreaMedica!=0) {
+			String consSQL = "DELETE FROM AreaMedica WHERE idAreaMedica = " + idAreaMedica;
+			Dao.agregarBorrar(consSQL);
+		}
+		
+	}
 	
 	
 }

@@ -3,6 +3,8 @@ package Clinica;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.swing.DefaultComboBoxModel;
+
 public class Medico {
 	private int idMed;
 	private String nombreMedico;
@@ -116,7 +118,26 @@ public class Medico {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		
 	}
+	
+	public ResultSet listadoMedicoPorEspecializacion(String esp) {
+		String consSQL = "SELECT nombreMedico FROM Medico WHERE especialidadMed = '" + esp + "'";
+		return Dao.consulta(consSQL);
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public DefaultComboBoxModel completaComboString(ResultSet rs) {
+		DefaultComboBoxModel datCom = new DefaultComboBoxModel();
+			try {
+				while(rs.next()) {
+					datCom.addElement(rs.getString(1));
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		return datCom;
+	}
+
 
 }

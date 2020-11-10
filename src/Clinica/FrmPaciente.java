@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.NumberFormat;
+import java.util.Locale;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
@@ -91,7 +92,7 @@ public class FrmPaciente extends JDialog {
 		lblNewLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblNewLabel.setBounds(67, 39, 47, 14);
 		contentPane.add(lblNewLabel);
-		NumberFormat format = NumberFormat.getInstance();
+		NumberFormat format = NumberFormat.getInstance(Locale.GERMAN);
 		NumberFormatter formatter = new NumberFormatter(format);
 		formatter.setValueClass(Integer.class);
 		formatter.setMinimum(111111); //valor mínimo
@@ -193,8 +194,8 @@ public class FrmPaciente extends JDialog {
 			public void focusLost(FocusEvent arg0) {
 				String texto = txtDniPac.getText();
 				if(txtDniPac.getText().length()>5) {			// Control si el textbox tiene mas de 5 caracteres
-					if(texto.indexOf('.')>1) {texto = txtDniPac.getText().replaceAll("\\.", "");}
-					if(texto.indexOf(',')>1) {texto = txtDniPac.getText().replaceAll("\\,", "");}
+					if(texto.indexOf('.')>=1) {texto = txtDniPac.getText().replaceAll("\\.", "");}
+					if(texto.indexOf(',')>=1) {texto = txtDniPac.getText().replaceAll("\\,", "");}
 						try {
 							paciente.setDniPac(Integer.parseInt(texto));						// asigna al objeto paciente el dni
 						} catch (Exception e){
@@ -250,9 +251,9 @@ public class FrmPaciente extends JDialog {
 			public void mouseClicked(MouseEvent arg0) {
 				String texto = txtDniPac.getText();
 				if(texto.length()>5) {
-					if(texto.indexOf('.')>1) {
+					if(texto.indexOf('.')>=1) {
 						texto = txtDniPac.getText().replaceAll("\\.", "");}
-					if(texto.indexOf(',')>1) {
+					if(texto.indexOf(',')>=1) {
 						texto = txtDniPac.getText().replaceAll("\\,", "");}
 					paciente.setDniPac(Integer.parseInt(texto));
 					if(paciente.existeDNI()) {						// Busqueda de paciente

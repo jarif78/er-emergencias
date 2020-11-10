@@ -44,15 +44,15 @@ public class Paciente {
 	public boolean darAltaPaciente() {
 		if(pacienteCompleto()) {
 			String sqlingreso;
-			sqlingreso = "INSERT INTO `Paciente` (`idPac`, `nomPac`, `dniPac`, `telPac`, `coberturaPac`) VALUES (NULL, '" + this.nombrePac 
-			+ "', " + this.dniPac + ", '" + this.telefonoPac +  "', '" + this.coberturaPac +"')"; 
+			sqlingreso = "INSERT INTO `Paciente` (`idPac`, `nomPac`, `dniPac`, `telPac`, `coberturaPac`) VALUES (NULL, '" + nombrePac 
+			+ "', " + dniPac + ", '" + telefonoPac +  "', '" + coberturaPac +"')"; 
 			Dao.agregarBorrar(sqlingreso);
 			return true;
 		} else return false;
 	}
 	
 	private boolean pacienteCompleto() {
-		if(this.coberturaPac.length()<5&&this.dniPac>99999&&this.nombrePac.length()<5&&this.telefonoPac.length()<4) {
+		if(coberturaPac.length()<5&&dniPac>99999&&nombrePac.length()<5&&telefonoPac.length()<4) {
 			pacienteActivo();
 				return false;
 			} else	return true;
@@ -63,7 +63,7 @@ public class Paciente {
 		boolean resultado = false;
 		if(pacienteCompleto()) {
 			String sqlEditar;
-			sqlEditar = "UPDATE `Paciente` SET `nomPac`='" + this.nombrePac + "',`dniPac`='" + this.dniPac + "',`telPac`='" + this.telefonoPac + "',`coberturaPac`='" + this.coberturaPac + "' WHERE `idPac` = " + this.idPac;
+			sqlEditar = "UPDATE `Paciente` SET `nomPac`='" + nombrePac + "',`dniPac`='" + dniPac + "',`telPac`='" + telefonoPac + "',`coberturaPac`='" + coberturaPac + "' WHERE `idPac` = " + idPac;
 			resultado = Dao.agregarBorrar(sqlEditar);
 		}
 		return resultado;
@@ -72,14 +72,14 @@ public class Paciente {
 	
 	public boolean eliminarPaciente() {
 		if (existeDNI()) {
-			String sql = "DELETE FROM `Paciente` WHERE `idPac` = " + this.idPac;
+			String sql = "DELETE FROM `Paciente` WHERE `idPac` = " + idPac;
 			return Dao.agregarBorrar(sql);
 		}
 		return false;
 	}
 	
 	public boolean existeDNI() {
-		String sql = "SELECT idPac FROM Paciente WHERE dniPac = " + this.dniPac;
+		String sql = "SELECT idPac FROM Paciente WHERE dniPac = " + dniPac;
 		return Dao.ifExists(sql);
 	}
 	
@@ -90,25 +90,41 @@ public class Paciente {
 	}
 	
 	public ResultSet pacienteConDNI() {
-		String sql = "SELECT * FROM Paciente WHERE dniPac = " + this.dniPac;
-		return Dao.consulta(sql);
+		String sql = "SELECT * FROM Paciente WHERE dniPac = " + dniPac;
+		ResultSet rs = Dao.consulta(sql);
+		
+		try {
+			while(rs.next()) {
+				idPac = rs.getInt(1);
+				nombrePac = rs.getString(2);
+				telefonoPac = rs.getString(4);
+				coberturaPac = rs.getString(5);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		rs = null;
+		rs = Dao.consulta(sql);
+		return rs;
 	}
 	
 	public ResultSet pacienteConNombre() {
-		String sql = "SELECT * FROM `Paciente` WHERE `nomPac` LIKE '%" + this.nombrePac + "%'";
+		String sql = "SELECT * FROM `Paciente` WHERE `nomPac` LIKE '%" + nombrePac + "%'";
 		return Dao.consulta(sql);
 	}
 	
 	
 	public void pacienteActivo() {
-		System.out.println(this.idPac+" - "+this.nombrePac+" - "+this.dniPac+" - "+this.telefonoPac+" - "+this.getCoberturaPac());
+		System.out.println(idPac+" - "+nombrePac+" - "+dniPac+" - "+telefonoPac+" - "+getCoberturaPac());
 	}
 	
 	public void borDatPac() {
-		this.idPac = 0;
-		this.nombrePac = "";
-		this.coberturaPac= "";
-		this.telefonoPac = "";
+		idPac = 0;
+		nombrePac = "";
+		coberturaPac= "";
+		telefonoPac = "";
 	}
+	
 
 }

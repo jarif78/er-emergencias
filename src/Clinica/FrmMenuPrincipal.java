@@ -11,11 +11,14 @@ import java.text.ParseException;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.SwingConstants;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class FrmMenuPrincipal {
 	private static JButton [] button = new JButton[3];
 	private JFrame frame;
 	private static JLabel lblConectando = new JLabel("Conectando a la Base de datos");
+	private JButton button_4;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -51,8 +54,7 @@ public class FrmMenuPrincipal {
 		JButton button_0 = new JButton();
 		JButton button_1 = new JButton();
 		JButton button_2 = new JButton();
-		JButton button_3 = new JButton();
-		
+
 		
 		button_0 = new JButton("Pacientes");
 		button_0.setVisible(true);
@@ -62,13 +64,13 @@ public class FrmMenuPrincipal {
 				FP.setVisible(true);
 			}
 		});
-		button_0.setBounds(320, 70, 156, 63);
+		button_0.setBounds(315, 173, 156, 63);
 		frame.getContentPane().add(button_0);
 		
 		
-		button_1 = new JButton ("Especialidades");
-		button_1.setVisible(true);
-		button_1.addMouseListener(new MouseAdapter() {
+		button_4 = new JButton ("Especialidades");
+		button_4.setVisible(true);
+		button_4.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent arg0) {
 				FrmEspecialidades FE;
 				try {
@@ -80,8 +82,8 @@ public class FrmMenuPrincipal {
 				
 			}
 		});
-		button_1.setBounds(117, 70, 156, 63);
-		frame.getContentPane().add(button_1);
+		button_4.setBounds(117, 70, 156, 63);
+		frame.getContentPane().add(button_4);
 		
 		
 		button_2 = new JButton ("Medicos");
@@ -95,17 +97,29 @@ public class FrmMenuPrincipal {
 		});
 		button_2.setBounds(117, 173, 156, 63);
 		frame.getContentPane().add(button_2);
+		
+		JButton button_3 = new JButton("Area Medica");
+		button_3.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				FrmAreaMedica FA = new FrmAreaMedica();
+				FA.setVisible(true);
+				
+			}
+		});
+		button_3.setBounds(315, 70, 156, 63);
+		frame.getContentPane().add(button_3);
 	
 		
 		
 		
 		
 		
-		//lblConectando = new JLabel("Conectando a la Base de datos");
-		//lblConectando.setHorizontalAlignment(SwingConstants.CENTER);
-		//lblConectando.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		//lblConectando.setBounds(171, 178, 317, 54);
-		//frame.getContentPane().add(lblConectando);
+		lblConectando = new JLabel("Conectando a la Base de datos");
+		lblConectando.setHorizontalAlignment(SwingConstants.CENTER);
+		lblConectando.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblConectando.setBounds(171, 178, 317, 54);
+		frame.getContentPane().add(lblConectando);
 		
 		JOptionPane.showMessageDialog(null, "Bienvenido!\n\nMateria: Programacion Orientada a Objetos\n\nTrabajo Practico de programa Clinica - UNPAZ                                     "
 				+ "\n\n\nProfesor: Ing. Lucas Guaycochea\nProfesor: Lic. Cristian Ciarallo\n\nAlumno: Anahi Aguirre\nAlumno: Ariel Fernandez\nAlumno: Ricardo Gonzalez\nAlumno: Walter Suarez\n\n",

@@ -49,6 +49,11 @@ public class FrmEspecialidades extends JDialog {
 	private JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 	private JButton btnEliminar = new JButton("Eliminar Especializacion");
 	private JComboBox cmbAreMed = new JComboBox();
+	private JComboBox cmbMedEsp = new JComboBox();
+	private Medico m = new Medico();
+	private AreaMedica a = new AreaMedica();
+	private JCheckBox chckbxNewCheckBox = new JCheckBox("Asignar Medico especialidad indistinta");
+
 
 	
 	/**
@@ -93,10 +98,23 @@ public class FrmEspecialidades extends JDialog {
 		lblMedico.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblMedico.setBounds(25, 94, 190, 24);
 		panGen.add(lblMedico);
+		cmbMedEsp.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent arg0) {
+			}
+		});
 		
-		JComboBox cmbMedEsp = new JComboBox();
 		cmbMedEsp.setBounds(225, 94, 180, 20);
 		panGen.add(cmbMedEsp);
+		
+		JButton btnGuardarGral = new JButton("Guardar");
+
+		btnGuardarGral.setBounds(453, 273, 89, 23);
+		panGen.add(btnGuardarGral);
+		
+		chckbxNewCheckBox.setVerticalAlignment(SwingConstants.TOP);
+		chckbxNewCheckBox.setHorizontalAlignment(SwingConstants.LEFT);
+		chckbxNewCheckBox.setBounds(117, 125, 288, 24);
+		panGen.add(chckbxNewCheckBox);
 		
 		JPanel PanHora = new JPanel();
 		tabbedPane.addTab("Dias y horarios", null, PanHora, null);
@@ -121,7 +139,6 @@ public class FrmEspecialidades extends JDialog {
 		PanHora.add(lblHorarioHasta);
 		
 		JButton btnAgrHor = new JButton("Habilitar");
-
 		btnAgrHor.setBounds(467, 286, 89, 23);
 		PanHora.add(btnAgrHor);
 		
@@ -141,9 +158,11 @@ public class FrmEspecialidades extends JDialog {
 		JDateChooser jdateDesde = new JDateChooser();
 		jdateDesde.setBounds(125, 57, 155, 20);
 		jdateDesde.setDate(new Date());
+		jdateDesde.setMinSelectableDate(fechaHoy);
 		panCer.add(jdateDesde);
 		JDateChooser jdateHasta = new JDateChooser();
 		jdateHasta.setBounds(125, 108, 155, 20);
+		jdateHasta.setMinSelectableDate(fechaHoy);
 		panCer.add(jdateHasta);
 		JButton btnAgregarFeriado = new JButton("Inhabilitar");
 		btnAgregarFeriado.setBounds(99, 205, 113, 23);
@@ -200,13 +219,65 @@ public class FrmEspecialidades extends JDialog {
 			chkDia[x].setBounds(31, a, 97, 23);
 			PanHora.add(chkDia[x]);
 		}
+		
+		cmbMedEsp.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent arg0) {
+				if(arg0.getStateChange() == ItemEvent.SELECTED) {
+					m.setNombreMedico(cmbMedEsp.getSelectedItem()+"");
+					m.cargarMedicoConNombre();
+					esp.setIdMed(m.getIdMed());
+				}
+			}
+		});
+
+		cmbAreMed.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange() == ItemEvent.SELECTED) {
+					a.setNombreAreaMedica(cmbAreMed.getSelectedItem()+"");
+					a.cargarAreaConNombre();
+					
+				}
+			}
+		});
+
+		
+		btnGuardarGral.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				
+				
+				if(a.getIdAreaMedica()!=0&&a.getIdAreaMedica()!=esp.getIdAreaMedica()) {
+					esp.setIdAreaMedica(a.getIdAreaMedica());
+					esp.guardarIDAreaMedica();
+				}
+				if(m.getIdMed()!=0) {
+					esp.guardarIdMedico();
+				}
+			}
+		});
+		
+		chckbxNewCheckBox.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				
+				if(chckbxNewCheckBox.isSelected()) {
+					cmbMedEsp.removeAllItems();
+					cmbMedEsp.setModel(m.completaComboString(m.listadoNombreMedicos()));
+				} else {
+					cmbMedEsp.removeAllItems();
+					cmbMedEsp.setModel(m.completaComboString(m.listadoMedicoPorEspecializacion(especialidad)));
+				}
+				cmbMedEsp.setSelectedIndex(-1);
+			}
+		});
+
 
 		btnHabilitar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if(cmbDiasInhabilitados.getSelectedIndex()>=0) {
 					java.sql.Date d = (java.sql.Date) cmbDiasInhabilitados.getSelectedItem();
 					esp.habilitarDias(d);
-					cargarForm(esp);
+					cargarForm(esp, m);
 				}}
 		});
 		
@@ -224,16 +295,17 @@ public class FrmEspecialidades extends JDialog {
 
 		cmbEsp.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) {
-				if(especialidad==(String) cmbEsp.getSelectedItem()) {
-				} else {
-					cargarForm(esp);
-					if(ID!=0) {
+				if(arg0.getStateChange() == ItemEvent.SELECTED) {
+					if(especialidad==(String) cmbEsp.getSelectedItem()) {
 					} else {
-						btnEliminar.setEnabled(false);
-						tabbedPane.setEnabled(false);
+						cargarForm(esp, m);
+						if(ID!=0) {
+						} else {
+							btnEliminar.setEnabled(false);
+							tabbedPane.setEnabled(false);
+						}
 					}
-				}
-			}
+				}}
 		});
 		
 		btnAgrEsp.addActionListener(new ActionListener() {
@@ -277,13 +349,14 @@ public class FrmEspecialidades extends JDialog {
 						for(int y = 0; y < 25; y++) {
 							if(y>= d&& y<=h) {
 							esp.setDiaHorEsp(r,x,y);
+							//System.out.println("linea: " + r +" - dia: " + x + " - hora: " + y );
 							r = r+ 1;
 							}
 						}
 					}
 				}
 				esp.setDiaHorEsp2();
-				cargarForm(esp);
+				cargarForm(esp, m);
 			}
 		});
 
@@ -303,7 +376,7 @@ public class FrmEspecialidades extends JDialog {
 					jdateHasta.setDate(jdateDesde.getDate());
 					}
 				sumarDiaFecha(jdateDesde.getDate(), jdateHasta.getDate(), esp);
-				cargarForm(esp);
+				cargarForm(esp, m);
 				//System.out.println(jdateHasta.getDate());
 			}
 		});
@@ -342,12 +415,37 @@ public class FrmEspecialidades extends JDialog {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void cargarForm(Especialidades esp) {
+	public void cargarForm(Especialidades esp, Medico m) {
+		chckbxNewCheckBox.setSelected(false);
 		especialidad= (String) cmbEsp.getSelectedItem();
 		esp.setNomEsp(especialidad);
 		esp.cargarIdEspPorNombre();
 		ID = esp.getIdEsp();
 		if(ID!=0) {
+			if(esp.getIdMed()==0) {
+				cmbMedEsp.removeAllItems();
+				cmbMedEsp.setModel(m.completaComboString(m.listadoMedicoPorEspecializacion(especialidad)));
+				cmbMedEsp.setSelectedIndex(-1);
+			}else {
+				cmbMedEsp.removeAllItems();
+				m.setIdMed(esp.getIdMed());
+				m.cargarMedicoConId();
+				cmbMedEsp.addItem(m.getNombreMedico());
+				esp.setIdMed(m.getIdMed());
+			}
+			
+			if(esp.getIdAreaMedica()==0) {
+				cmbAreMed.removeAllItems();
+				cmbAreMed.setModel(a.completaComboString(a.listadoAreaMedica()));
+				cmbAreMed.setSelectedIndex(-1);
+			}else {
+				cmbAreMed.removeAllItems();
+				a.setIdAreaMedica(esp.getIdAreaMedica());
+				a.cargarAreaConID();
+				cmbAreMed.addItem(a.getNombreAreaMedica());
+				esp.setIdAreaMedica(a.getIdAreaMedica());
+			}
+				
 			limpiarHoras();
 			esp.carDiaHorEsp();
 			btnEliminar.setEnabled(true);
@@ -361,7 +459,7 @@ public class FrmEspecialidades extends JDialog {
 					cmbDes[x].setSelectedIndex(a[0]);
 					cmbHas[x].setSelectedIndex(a[1]);
 			}}
-
+			esp.limpiarDiasHoras();
 		}
 	}
 	

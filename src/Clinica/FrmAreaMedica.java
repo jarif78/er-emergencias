@@ -7,6 +7,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.JComboBox;
 import java.awt.event.ItemListener;
@@ -85,10 +86,10 @@ public class FrmAreaMedica extends JDialog {
 		cmbMedicoCoordinador.setBounds(198, 159, 248, 20);
 		contentPanel.add(cmbMedicoCoordinador);
 		
-		JButton btnNewButton = new JButton("Guardar");
+		JButton btnGuardar = new JButton("Guardar");
 
-		btnNewButton.setBounds(220, 238, 89, 23);
-		contentPanel.add(btnNewButton);
+		btnGuardar.setBounds(84, 238, 89, 23);
+		contentPanel.add(btnGuardar);
 		
 		JButton btnNewButton_1 = new JButton("Cerrar");
 		btnNewButton_1.addActionListener(new ActionListener() {
@@ -113,6 +114,10 @@ public class FrmAreaMedica extends JDialog {
 		cmbAgregarEspecialidad.setSelectedIndex(-1);
 		cmbEliminarEspecialidad.setSelectedIndex(-1);
 		cmbMedicoCoordinador.setSelectedIndex(-1);
+		
+		JButton btnEliminar = new JButton("Eliminar");
+		btnEliminar.setBounds(226, 238, 89, 23);
+		contentPanel.add(btnEliminar);
 
 		
 		
@@ -172,7 +177,7 @@ public class FrmAreaMedica extends JDialog {
 			}
 		});		
 		
-		btnNewButton.addMouseListener(new MouseAdapter() {
+		btnGuardar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				if(agregar&&cmbMedicoCoordinador.getSelectedIndex()>-1) {
@@ -181,21 +186,44 @@ public class FrmAreaMedica extends JDialog {
 					area.agregarArea();
 				}
 				if(area.getIdAreaMedica()>0&&cmbAgregarEspecialidad.getSelectedIndex()>-1) {
-					especialidadAgregar.establecerAreaMedica();
+					especialidadAgregar.guardarIDAreaMedica();
 				}
 				if(area.getIdAreaMedica()>0&&cmbEliminarEspecialidad.getSelectedIndex()>-1) {
-					System.out.println(especialidadBorrar.getIdEsp());
 					especialidadBorrar.borrarAreaMedica();
 				}
-
+				cmbMedicoCoordinador.setModel(area.completaComboString(medico.listadoNombreMedicos()));
+				cmbAreaMedica.setModel(area.completaComboString(area.listadoAreaMedica()));
 				cmbEliminarEspecialidad.setModel(area.completaComboString(especialidadBorrar.especialidadConArea(area.getIdAreaMedica())));
 				cmbAgregarEspecialidad.setModel(area.completaComboString(especialidadAgregar.especialidadSinArea()));
 				cmbEliminarEspecialidad.setSelectedIndex(-1);
 				cmbAgregarEspecialidad.setSelectedIndex(-1);
+				cmbAreaMedica.setSelectedIndex(-1);
+				cmbMedicoCoordinador.setSelectedIndex(-1);
+				JOptionPane.showMessageDialog(null, "El Area Medica " + area.getNombreAreaMedica() + " se agrego correctamente.", "Area Medica", JOptionPane.INFORMATION_MESSAGE);
 					
 			}
 
 		});
+		
+		btnEliminar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				area.eliminarAreaMedica();
+				cmbMedicoCoordinador.setModel(area.completaComboString(medico.listadoNombreMedicos()));
+				cmbAreaMedica.setModel(area.completaComboString(area.listadoAreaMedica()));
+				cmbEliminarEspecialidad.setModel(area.completaComboString(especialidadBorrar.especialidadConArea(area.getIdAreaMedica())));
+				cmbAgregarEspecialidad.setModel(area.completaComboString(especialidadAgregar.especialidadSinArea()));
+				cmbMedicoCoordinador.setSelectedIndex(-1);
+				cmbAreaMedica.setSelectedIndex(-1);
+				cmbEliminarEspecialidad.setSelectedIndex(-1);
+				cmbAgregarEspecialidad.setSelectedIndex(-1);
+
+				JOptionPane.showMessageDialog(null, "El Area Medica " + area.getNombreAreaMedica() + " se elimino correctamente.", "Area Medica", JOptionPane.INFORMATION_MESSAGE);
+				
+			}
+		});
+
+		
 		
 	}
 }

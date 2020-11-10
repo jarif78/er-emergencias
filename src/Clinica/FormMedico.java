@@ -227,8 +227,8 @@ public class FormMedico extends JDialog {
 			public void focusLost(FocusEvent e) {
 				if(txtDniMedico.getText().trim().length()>5) {			// trim sirve para que no completen espacios con spacebar
 					String dni = txtDniMedico.getText();
-					if(dni.indexOf('.')>1) {dni = dni.replaceAll("\\.", "");}
-					if(dni.indexOf(',')>1) {dni = dni.replaceAll("\\,", "");}
+					if(dni.indexOf('.')>=1) {dni = dni.replaceAll("\\.", "");}
+					if(dni.indexOf(',')>=1) {dni = dni.replaceAll("\\,", "");}
 						try {
 							medico.setDniMedico(Integer.parseInt(dni));						// asigna al objeto paciente el dni
 						} catch (Exception e1){

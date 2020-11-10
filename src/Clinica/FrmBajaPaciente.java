@@ -2,6 +2,8 @@ package Clinica;
 
 import java.sql.SQLException;
 import java.text.NumberFormat;
+import java.util.Locale;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -75,7 +77,7 @@ public class FrmBajaPaciente extends JDialog {
 		btnNewButton.setBounds(610, 10, 89, 23);
 		getContentPane().add(btnNewButton);
 
-		NumberFormat format = NumberFormat.getInstance();
+		NumberFormat format = NumberFormat.getInstance(Locale.GERMAN);
 		NumberFormatter formatter = new NumberFormatter(format);
 		formatter.setValueClass(Integer.class);
 		formatter.setMinimum(111111); //valor mínimo
