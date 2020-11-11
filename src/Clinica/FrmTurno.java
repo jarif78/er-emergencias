@@ -63,6 +63,7 @@ public class FrmTurno extends JDialog {
 	private String horaInicioTurno;
 	private String horaFinTurno;
 	private JLabel lblFecha = new JLabel("");
+	private AuxTurnos aux = new AuxTurnos();
 
 	/**
 	 * Launch the application.
@@ -270,7 +271,7 @@ public class FrmTurno extends JDialog {
 		
 		JLabel lblNewLabel_2 = new JLabel("  ");
 		menuBar.add(lblNewLabel_2);
-		sumaSemana();
+		sumaSemana(E);
 		
 		spMinutoFin.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
@@ -310,38 +311,48 @@ public class FrmTurno extends JDialog {
 		table.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				int control = Integer.parseInt(table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()) + "");
-				if(control!=60) {
-					if(e.getKeyCode()==10) {
-						fechaTurno = table.getValueAt(table.getSelectedRow(), 0) + " ";
-						lblFecha.setText(fechaTurno);
-						int h = Integer.parseInt(table.getColumnName(table.getSelectedColumn()));
-						spHoraInicio.setModel(new SpinnerNumberModel(h, h, h, 1));
-						spHoraFin.setModel(new SpinnerNumberModel(h, h, h+2, 1));
-						spMinutoFin.setModel(new SpinnerNumberModel(9, 0, 59, 10));
-						spMinutoInico.setValue(0);
-						spMinutoInico.requestFocus();
-						if(P.getIdPac()>0) {
-							btnTurno.setEnabled(true);
-						}}
-			}}
+				if(e.getKeyCode()==10&&table.getSelectedColumn()!=0) {
+					int control = Integer.parseInt(table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()) + "");
+					int r = 0;
+					if(control!=100) {
+						if(control>=51) {r = JOptionPane.showConfirmDialog(null, "El horario se encuentra completo, desea dar sobreturno?", "Autorizar sobreturno", JOptionPane.YES_NO_OPTION);}
+						if(r==0) {
+							fechaTurno = table.getValueAt(table.getSelectedRow(), 0) + " ";
+							lblFecha.setText(fechaTurno);
+							int h = Integer.parseInt(table.getColumnName(table.getSelectedColumn()));
+							spHoraInicio.setModel(new SpinnerNumberModel(h, h, h, 1));
+							spHoraFin.setModel(new SpinnerNumberModel(h, h, h+2, 1));
+							spMinutoFin.setModel(new SpinnerNumberModel(9, 0, 59, 10));
+							spMinutoInico.setValue(0);
+							spMinutoInico.requestFocus();
+							T.turnosHora(fechaTurno, h);
+							if(P.getIdPac()>0) {
+								btnTurno.setEnabled(true);
+						}}}}}
 		});
+		
 		table.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent arg0) {
-				int control = Integer.parseInt(table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()) + "");
-				if(control!=60) {
-					if(arg0.getClickCount()==2){
-						fechaTurno = table.getValueAt(table.getSelectedRow(), 0) + " ";
-						lblFecha.setText(fechaTurno);
-						int h = Integer.parseInt(table.getColumnName(table.getSelectedColumn()));
-						spHoraInicio.setModel(new SpinnerNumberModel(h, h, h, 1));
-						spHoraFin.setModel(new SpinnerNumberModel(h, h, h+2, 1));
-						spMinutoInico.setValue(0);
-						spMinutoFin.setModel(new SpinnerNumberModel(9, 0, 59, 10));
-						spMinutoInico.requestFocus();
-						if(P.getIdPac()>0) {
-							btnTurno.setEnabled(true);
-						}}}}
+				if(table.getSelectedColumn()!=0) {
+					int control = Integer.parseInt(table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()) + "");
+					int r=0;
+					if(control!=100) {
+						if(arg0.getClickCount()==2){
+							if(control>=51) {
+								r = JOptionPane.showConfirmDialog(null, "El horario se encuentra completo, desea dar sobreturno?", "Autorizar sobreturno", JOptionPane.YES_NO_OPTION);}
+								if(r==0) {
+									fechaTurno = table.getValueAt(table.getSelectedRow(), 0) + " ";
+									lblFecha.setText(fechaTurno);
+									int h = Integer.parseInt(table.getColumnName(table.getSelectedColumn()));
+									spHoraInicio.setModel(new SpinnerNumberModel(h, h, h, 1));
+									spHoraFin.setModel(new SpinnerNumberModel(h, h, h+2, 1));
+									spMinutoInico.setValue(0);
+									spMinutoFin.setModel(new SpinnerNumberModel(9, 0, 59, 10));
+									spMinutoInico.requestFocus();
+									T.turnosHora(fechaTurno, h);
+									if(P.getIdPac()>0) {
+										btnTurno.setEnabled(true);
+						}}}}}}
 		});
 		
 		btnBuscar.addActionListener(new ActionListener() {
@@ -371,7 +382,9 @@ public class FrmTurno extends JDialog {
 		semana.addAdjustmentListener(new AdjustmentListener() {
 			public void adjustmentValueChanged(AdjustmentEvent arg0) {
 				sem = semana.getValue();
-				sumaSemana();
+				diasHorasHabilitado(E);
+				sumaSemana(E);
+
 			}
 		});
 
@@ -384,7 +397,7 @@ public class FrmTurno extends JDialog {
 					if(E.getIdEsp()>0) {table.setEnabled(true);};
 					diasHorasHabilitado(E);
 					semana.setValue(0);
-					sumaSemana();
+					sumaSemana(E);
 					
 				}}
 		});
@@ -412,7 +425,13 @@ public class FrmTurno extends JDialog {
 				
 				int r = JOptionPane.showConfirmDialog(null, "Turno para: " + E.getNomEsp() + "\n\nPaciente: " + P.getNombrePac() + 
 						"\t\n\nFecha: " + T.getFechaDesde() + "\nHasta: " + T.getFechaHasta(),"Turno " + A.getNombreAreaMedica(), JOptionPane.YES_NO_OPTION);
-				if(r==0) {T.cargarTurno();}
+				if(r==0) {T.cargarTurno();
+				dispose();
+				JOptionPane.showMessageDialog(null, "El turno se ingreso correctamente", "Turno aceptado", JOptionPane.INFORMATION_MESSAGE);
+				FrmTurno FR = new FrmTurno();
+				FR.setVisible(true);
+				
+				}
 			}
 		});
 		
@@ -437,24 +456,79 @@ public class FrmTurno extends JDialog {
 	public void limpiarTabla() {
 		for(int x = 0; x<7; x++) {
 			for(int y = 1; y < 25; y++) {
-				table.setValueAt(60, x, y);
+				table.setValueAt(100, x, y);
 			}}
 	}
 	
-	public void sumaSemana() { 
+	public void sumaSemana(Especialidades E) {
+		T.setIdEspecialidad(E.getIdEsp());
 		Calendar c = Calendar.getInstance(); // iniciar calendario con la fecha de hoy
 		c.add(Calendar.WEEK_OF_YEAR, sem);
 		c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY); // buscar en la semana de la fecha de hoy el lunes 
 		DateFormat df = new SimpleDateFormat("dd/MM/yyyy");  // formato
+		DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 		for (int i = 0; i < 7; i++) { 
 			table.setValueAt(df.format(c.getTime()), i, 0);
+			if(i==0) {
+				T.setFechaDesde(sdf.format(c.getTime())+" 00:00:00");
+			} else if(i==6) {
+				T.setFechaHasta(sdf.format(c.getTime())+" 23:59:59");
+			}
 			c.add(Calendar.DATE, 1);
-		} }
+		}
+		ResultSet rs = null;
+		rs = T.turnosSemana();
+		try {
+			while(rs.next()) {
+				String desde = rs.getString(2);
+				String hasta = rs.getString(3);
+				aux.turnosTomados(desde, hasta);	
+				sumaMinutos(aux);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public void sumaMinutos(AuxTurnos aux) {
+		
+		int linea = 0;
+		
+		for(int x = 0; x < 7; x++) {
+			if(aux.fecha.equals(table.getValueAt(x, 0))) { linea = x; x=7;};
+		}
+		
+		if(aux.hora<6) {
+			int m = (int) table.getValueAt(linea, aux.hora + 19);
+			table.setValueAt(m + aux.sumaminutos,  linea, aux.hora + 19);
+		}else {
+			int m = (int) table.getValueAt(linea, aux.hora - 5);
+			table.setValueAt(m + aux.sumaminutos,  linea, aux.hora - 5);
+		}
+		
+		if(aux.acumulado>0) {
+			int h = aux.hora + 1;
+				if(h<6) {
+					int m = (int) table.getValueAt(linea, h + 19);
+					table.setValueAt(m + aux.acumulado,  linea, h + 19);
+				}else {
+					int m = (int) table.getValueAt(linea, h - 5);
+					table.setValueAt(m + aux.acumulado,  linea, h - 5);
+				}
+			aux.acumulado = 0;
+		}
+	}
+
+
+	
+	
 	
 	public void armadoTurno(Turno T) {
 		lblFecha.setText(fechaTurno);
 		String diasql = null;
-		System.out.println(fechaTurno);
+		//System.out.println(fechaTurno);
 		SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");	
 		try {
 			diasql = new java.sql.Date(sdf.parse(fechaTurno).getTime()) + "";
