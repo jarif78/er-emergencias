@@ -32,7 +32,14 @@ _Esto desplegará la aplicación con su menú inicial y podrá realizar las prue
 
 ## Despliegue 📦
 
-_Para generar un archivo ejecutable del sistema se debe realizar lo siguiente:_
+_Para generar un archivo ejecutable (JAR) del sistema se debe realizar lo siguiente:_
+
+```
+Se posiciona sobre el proyecto y se da botón derecho del mouse.
+Se elige la opción: exportar -> Java -> Runnable JAR file.
+
+```
+_Esta acción generará un archivo JAR que podrá ser ejecutado en cualquier sistema operativo que tenga la máquina virtual Java (JVM)._
 
 ## Construido con 🛠️
 
