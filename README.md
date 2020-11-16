@@ -1,4 +1,4 @@
-# Sistema de Clínica Médica (versión prototipo)
+# Sistema de Clínica Médica
 
 _El presente trabajo es el desarrollo de un software para la gestiónn de una clínica médica como trabajo integrador para la matería Programación Orientada a Objetos de la UNPAZ_
 
@@ -18,7 +18,7 @@ _Se deberá contar con los siguientes software para la ejecución y/o modificaci
 _Para la descarga del proyecto se debe contar con una cuenta en Github._
 
 ```
-$ git clone https://github.com/jarif78/er-emergencias-v2.git
+$ git clone https://github.com/jarif78/er-emergencias.git
 ```
 
 _Una vez clonado el repositorio en local, no hace falta instalar nada más._
@@ -35,9 +35,8 @@ _Esto desplegará la aplicación con su menú inicial y podrá realizar las prue
 _Para generar un archivo ejecutable (JAR) del sistema se debe realizar lo siguiente:_
 
 ```
-Se posiciona sobre el proyecto y se da botón derecho del mouse.
-Se elige la opción: exportar -> Java -> Runnable JAR file.
-
+- Se posiciona sobre el proyecto y se da botón derecho del mouse.
+- Se elige la opción: exportar -> Java -> Runnable JAR file.
 ```
 _Esta acción generará un archivo JAR que podrá ser ejecutado en cualquier sistema operativo que tenga la máquina virtual Java (JVM)._
 
@@ -52,7 +51,7 @@ _Estos son los integrantes del equipo que desarrolló el presente sistema:_
 
 * **Anahí Aguirre** - *Trabajo de grupo* - [AnahiAguirre](https://github.com/AnahiAguirre)
 * **ARiel Fernández** - *Trabajo de grupo* - [jarif78](https://github.com/jarif78)
-* **Ricardo Gonzalez** - *Trabajo de grupo* - [richararg](https://github.com/richararg)
+* **Ricardo González** - *Trabajo de grupo* - [richararg](https://github.com/richararg)
 
 
 ## Licencia 📄
